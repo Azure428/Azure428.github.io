@@ -1,10 +1,10 @@
 [
   {
     "id": 1,
-    "name": "食堂",
+    "name": "食堂 (测试更新)",
     "latitude": 39.9042,
     "longitude": 116.4074,
-    "availableUmbrellas": 15,
+    "availableUmbrellas": 16,
     "totalUmbrellas": 20
   },
   {
