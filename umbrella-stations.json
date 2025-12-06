@@ -1,66 +1,18 @@
 [
   {
     "id": 1,
-    "name": "食堂 (测试更新)",
+    "name": "测试站点1",
     "latitude": 39.9042,
     "longitude": 116.4074,
-    "availableUmbrellas": 16,
-    "totalUmbrellas": 20
-  },
-  {
-    "id": 2,
-    "name": "测试1",
-    "latitude": 39.9151,
-    "longitude": 116.4038,
-    "availableUmbrellas": 8,
-    "totalUmbrellas": 20
-  },
-  {
-    "id": 3,
-    "name": "天安门东站",
-    "latitude": 39.9097,
-    "longitude": 116.4086,
-    "availableUmbrellas": 12,
-    "totalUmbrellas": 20
-  },
-  {
-    "id": 4,
-    "name": "西单站",
-    "latitude": 39.9002,
-    "longitude": 116.3765,
-    "availableUmbrellas": 5,
-    "totalUmbrellas": 20
-  },
-  {
-    "id": 5,
-    "name": "中关村站",
-    "latitude": 39.9841,
-    "longitude": 116.3075,
-    "availableUmbrellas": 20,
-    "totalUmbrellas": 20
-  },
-  {
-    "id": 6,
-    "name": "三里屯站",
-    "latitude": 39.9336,
-    "longitude": 116.4531,
     "availableUmbrellas": 10,
     "totalUmbrellas": 20
   },
   {
-    "id": 7,
-    "name": "五道口站",
-    "latitude": 40.0015,
-    "longitude": 116.3365,
-    "availableUmbrellas": 18,
-    "totalUmbrellas": 20
-  },
-  {
-    "id": 8,
-    "name": "国贸站",
-    "latitude": 39.9075,
-    "longitude": 116.4678,
-    "availableUmbrellas": 3,
+    "id": 2,
+    "name": "测试站点2",
+    "latitude": 39.9151,
+    "longitude": 116.4038,
+    "availableUmbrellas": 15,
     "totalUmbrellas": 20
   }
 ]
