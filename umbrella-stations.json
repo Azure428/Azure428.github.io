@@ -30,5 +30,14 @@
     "longitude": 116.4074,
     "availableUmbrellas": 10,
     "totalUmbrellas": 20
+  },
+  {
+    "id": 1765090298655,
+    "name": "食堂",
+    "availableUmbrellas": 15,
+    "totalUmbrellas": 20,
+    "latitude": 39.9042,
+    "longitude": 116.4074,
+    "status": "open"
   }
 ]
