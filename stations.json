@@ -1,0 +1,10 @@
+[
+  {
+    "id": 1,
+    "name": "测试站点",
+    "location": "测试位置",
+    "available_umbrellas": 5,
+    "capacity": 10,
+    "status": "open"
+  }
+]
