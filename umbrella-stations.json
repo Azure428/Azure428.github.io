@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "name": "测试",
+    "name": "æµè¯",
     "latitude": 39.9042,
     "longitude": 116.4074,
     "availableUmbrellas": 10,
@@ -9,10 +9,18 @@
   },
   {
     "id": 2,
-    "name": "测试站点2",
+    "name": "æµè¯ç«ç¹2",
     "latitude": 39.9151,
     "longitude": 116.4038,
     "availableUmbrellas": 15,
     "totalUmbrellas": 20
+  },
+  {
+    "id": 1765089360118,
+    "name": "API测试站点",
+    "latitude": 39.9042,
+    "longitude": 116.4074,
+    "availableUmbrellas": 5,
+    "totalUmbrellas": 10
   }
 ]
