@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "name": "æµè¯",
+    "name": "Ã¦ÂµÂÃ¨Â¯Â",
     "latitude": 39.9042,
     "longitude": 116.4074,
     "availableUmbrellas": 10,
@@ -9,7 +9,7 @@
   },
   {
     "id": 2,
-    "name": "æµè¯ç«ç¹2",
+    "name": "Ã¦ÂµÂÃ¨Â¯ÂÃ§Â«ÂÃ§ÂÂ¹2",
     "latitude": 39.9151,
     "longitude": 116.4038,
     "availableUmbrellas": 15,
@@ -17,10 +17,18 @@
   },
   {
     "id": 1765089360118,
-    "name": "API测试站点",
+    "name": "APIæµè¯ç«ç¹",
     "latitude": 39.9042,
     "longitude": 116.4074,
     "availableUmbrellas": 5,
     "totalUmbrellas": 10
+  },
+  {
+    "id": 1765089472602,
+    "name": "测试站点",
+    "latitude": 39.9042,
+    "longitude": 116.4074,
+    "availableUmbrellas": 10,
+    "totalUmbrellas": 20
   }
 ]
