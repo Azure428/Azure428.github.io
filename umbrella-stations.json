@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "name": "Ã¦ÂµÂÃ¨Â¯Â",
+    "name": "大食堂",
     "latitude": 39.9042,
     "longitude": 116.4074,
     "availableUmbrellas": 10,
@@ -9,7 +9,7 @@
   },
   {
     "id": 2,
-    "name": "Ã¦ÂµÂÃ¨Â¯ÂÃ§Â«ÂÃ§ÂÂ¹2",
+    "name": "西教",
     "latitude": 39.9151,
     "longitude": 116.4038,
     "availableUmbrellas": 15,
@@ -17,7 +17,7 @@
   },
   {
     "id": 1765089360118,
-    "name": "APIæµè¯ç«ç¹",
+    "name": "东教",
     "latitude": 39.9042,
     "longitude": 116.4074,
     "availableUmbrellas": 5,
