@@ -339,8 +339,8 @@ class UmbrellaApp {
 
 // 页面加载完成后初始化应用
 document.addEventListener('DOMContentLoaded', () => {
-    // 创建GitHubAPI实例
-    window.githubAPI = new GitHubAPI();
+    // githubAPI实例已在github-api.js中创建，这里直接使用
+    console.log('页面加载完成，使用已创建的githubAPI实例:', githubAPI);
     // 初始化应用
     const app = new UmbrellaApp();
     // 处理扫码参数

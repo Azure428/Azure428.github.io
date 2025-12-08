@@ -160,5 +160,5 @@ class GitHubAPI {
     }
 }
 
-// 初始化GitHub API实例
-const githubAPI = new GitHubAPI();
+// 初始化GitHub API实例并添加到全局作用域
+window.githubAPI = new GitHubAPI();
