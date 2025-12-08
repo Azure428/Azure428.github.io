@@ -4,7 +4,7 @@
     "name": "大食堂",
     "latitude": 39.9042,
     "longitude": 116.4074,
-    "availableUmbrellas": 10,
+    "availableUmbrellas": "1",
     "totalUmbrellas": 20
   },
   {
