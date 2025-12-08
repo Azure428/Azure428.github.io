@@ -3,7 +3,11 @@ class GitHubAPI {
     constructor() {
         this.owner = 'Azure428'; // GitHub用户名
         this.repo = 'Azure428.github.io'; // 仓库名称
-        this.token = process.env.GITHUB_TOKEN; // 从环境变量获取GitHub访问令牌
+        
+        // 尝试从URL参数获取token（用于浏览器环境）
+        const urlParams = new URLSearchParams(window.location.search);
+        this.token = urlParams.get('token') || null;
+        
         this.baseUrl = `https://api.github.com/repos/${this.owner}/${this.repo}`;
         
         // 验证配置信息

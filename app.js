@@ -339,6 +339,9 @@ class UmbrellaApp {
 
 // 页面加载完成后初始化应用
 document.addEventListener('DOMContentLoaded', () => {
+    // 创建GitHubAPI实例
+    window.githubAPI = new GitHubAPI();
+    // 初始化应用
     const app = new UmbrellaApp();
     // 处理扫码参数
     app.handleScanParams();
