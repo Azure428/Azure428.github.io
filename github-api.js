@@ -95,7 +95,9 @@ class GitHubAPI {
         try {
             // 检查文件是否存在
             const existingFile = await this.getFileContent(path);
-            const contentBase64 = btoa(JSON.stringify(content, null, 2));
+            // 使用支持Unicode的Base64编码方法
+            const contentStr = JSON.stringify(content, null, 2);
+            const contentBase64 = btoa(unescape(encodeURIComponent(contentStr)));
 
             const payload = {
                 message: message,
