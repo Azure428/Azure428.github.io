@@ -107,7 +107,17 @@ class GitHubAPI {
             const existingFile = await this.getFileContent(path);
             // 使用支持Unicode的Base64编码方法
             const contentStr = JSON.stringify(content, null, 2);
-            const contentBase64 = btoa(unescape(encodeURIComponent(contentStr)));
+            // 使用现代的TextEncoder API进行Base64编码，确保可靠处理Unicode字符
+            let contentBase64;
+            try {
+                // 现代浏览器方法
+                const encoder = new TextEncoder();
+                const data = encoder.encode(contentStr);
+                contentBase64 = btoa(String.fromCharCode(...data));
+            } catch (e) {
+                // 兼容性回退
+                contentBase64 = btoa(unescape(encodeURIComponent(contentStr)));
+            }
 
             const payload = {
                 message: message,
