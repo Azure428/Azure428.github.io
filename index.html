@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>共享雨伞系统</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 登录页面 -->
+    <div id="loginPage" class="page">
+        <div class="login-container">
+            <h1>共享雨伞系统</h1>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="phone">手机号</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="studentId">学号</label>
+                    <input type="text" id="studentId" name="studentId" required>
+                </div>
+                <button type="submit">登录</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 主页面 -->
+    <div id="mainPage" class="page" style="display: none;">
+        <header>
+            <h1>共享雨伞系统</h1>
+            <div class="user-info">
+                <span id="userName">欢迎，用户</span>
+                <button id="logoutBtn">退出登录</button>
+            </div>
+        </header>
+
+        <main>
+            <!-- 伞点状态 -->
+            <section id="umbrellaPoints">
+                <h2>伞点状态</h2>
+                <div id="pointsList" class="points-list"></div>
+            </section>
+
+            <!-- 用户信息 -->
+            <section id="userInfo">
+                <h2>个人信息</h2>
+                <div class="user-details">
+                    <p>手机号: <span id="userPhone"></span></p>
+                    <p>学号: <span id="userStudentId"></span></p>
+                    <p>借伞状态: <span id="borrowStatus"></span></p>
+                    <p>当前借伞: <span id="currentUmbrella"></span></p>
+                </div>
+                <h3>借伞记录</h3>
+                <div id="borrowHistory"></div>
+            </section>
+
+            <!-- 扫码借还区域 -->
+            <section id="scanSection">
+                <h2>扫码借还</h2>
+                <div class="scan-container">
+                    <input type="text" id="pointIdInput" placeholder="输入伞点ID或扫码">
+                    <button id="borrowBtn">借伞</button>
+                    <button id="returnBtn">还伞</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="github-api.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
