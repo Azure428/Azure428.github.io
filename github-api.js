@@ -98,13 +98,28 @@ class GitHubAPI {
     // 创建或更新文件
     async createOrUpdateFile(path, content, message) {
         try {
+            console.log('=== 开始createOrUpdateFile操作 ===');
+            console.log('路径:', path);
+            console.log('内容:', JSON.stringify(content, null, 2));
+            console.log('提交信息:', message);
+            
             // 检查token是否存在
             if (!this.token) {
+                console.error('错误: GitHub API token不存在');
                 throw new Error('GitHub API token不存在，请在URL中添加token参数，如：?token=your_github_token');
             }
             
+            console.log('Token存在，长度:', this.token.length);
+            
             // 检查文件是否存在
-            const existingFile = await this.getFileContent(path);
+            let existingFile = null;
+            try {
+                existingFile = await this.getFileContent(path);
+                console.log('文件存在:', !!existingFile);
+            } catch (getFileError) {
+                console.log('检查文件存在性失败，视为文件不存在:', getFileError.message);
+                existingFile = null;
+            }
             // 使用支持Unicode的Base64编码方法
             const contentStr = JSON.stringify(content, null, 2);
             // 使用现代的TextEncoder API进行Base64编码，确保可靠处理Unicode字符
@@ -154,31 +169,58 @@ class GitHubAPI {
 
             // 确保Authorization头只包含ISO-8859-1字符
             const authHeader = 'token ' + this.token;
+            console.log('Authorization头:', authHeader.substring(0, 10) + '...'); // 只显示前10个字符，保护token
             
             // 对路径进行URL编码，确保只包含有效的ASCII字符
             const encodedPath = encodeURIComponent(path);
-            const response = await fetch(`${this.baseUrl}/contents/${encodedPath}`, {
-                method: existingFile ? 'PUT' : 'POST',
-                headers: {
-                    'Authorization': authHeader,
-                    'Accept': 'application/vnd.github.v3+json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            });
+            console.log('原始路径:', path);
+            console.log('编码后路径:', encodedPath);
+            
+            const apiUrl = `${this.baseUrl}/contents/${encodedPath}`;
+            console.log('API请求URL:', apiUrl);
+            console.log('请求方法:', existingFile ? 'PUT' : 'POST');
+            console.log('请求体:', JSON.stringify(payload, null, 2));
+            
+            try {
+                const response = await fetch(apiUrl, {
+                    method: existingFile ? 'PUT' : 'POST',
+                    headers: {
+                        'Authorization': authHeader,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
 
-            console.log('GitHub API响应状态:', response.status);
-            const responseData = await response.json();
-            console.log('GitHub API响应内容:', JSON.stringify(responseData, null, 2));
+                console.log('GitHub API响应状态:', response.status);
+                console.log('响应头:', JSON.stringify([...response.headers], null, 2));
+                
+                try {
+                    const responseData = await response.json();
+                    console.log('GitHub API响应内容:', JSON.stringify(responseData, null, 2));
+                    
+                    if (!response.ok) {
+                        console.error('API请求失败，状态码:', response.status);
+                        throw new Error(`更新文件失败: ${response.statusText}`);
+                    }
 
-            if (!response.ok) {
-                throw new Error(`更新文件失败: ${response.statusText}`);
+                    console.log('=== createOrUpdateFile操作成功完成 ===');
+                    return responseData;
+                } catch (jsonError) {
+                    console.error('解析响应JSON失败:', jsonError);
+                    throw new Error(`解析响应失败: ${jsonError.message}`);
+                }
+            } catch (fetchError) {
+                console.error('发送API请求失败:', fetchError);
+                if (fetchError.name === 'TypeError' && fetchError.message.includes('Failed to execute')) {
+                    console.error('这可能是由于URL中包含无效字符或网络问题导致的');
+                }
+                throw new Error(`发送请求失败: ${fetchError.message}`);
             }
-
-            return responseData;
         } catch (error) {
             console.error('创建或更新文件错误:', error);
             console.error('错误详情:', error.stack);
+            console.log('=== createOrUpdateFile操作失败 ===');
             throw error;
         }
     }
@@ -191,17 +233,36 @@ class GitHubAPI {
 
     // 创建或更新用户数据
     async saveUserData(phone, studentId, userData) {
+        console.log('开始保存用户数据...');
+        console.log('Phone:', phone);
+        console.log('StudentId:', studentId);
+        console.log('UserData:', JSON.stringify(userData, null, 2));
+        
         // 尝试先创建一个简单的目录占位文件，确保users目录存在
         try {
+            console.log('尝试创建目录占位文件...');
             await this.createOrUpdateFile('users/.gitkeep', '', 'Create users directory');
+            console.log('成功创建目录占位文件');
         } catch (error) {
             console.warn('创建目录占位文件失败:', error);
+            console.warn('失败详情:', error.stack);
             // 继续执行，因为即使目录不存在，GitHub API也可能会自动创建
         }
         
         const path = `users/${phone}_${studentId}.json`;
         const message = `Update user data for ${phone}_${studentId}`;
-        return await this.createOrUpdateFile(path, userData, message);
+        console.log('尝试保存用户数据到路径:', path);
+        console.log('提交信息:', message);
+        
+        try {
+            const result = await this.createOrUpdateFile(path, userData, message);
+            console.log('保存用户数据成功:', result);
+            return result;
+        } catch (error) {
+            console.error('保存用户数据失败:', error);
+            console.error('失败详情:', error.stack);
+            throw error;
+        }
     }
 
     // 获取所有伞点数据

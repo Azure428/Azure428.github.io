@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试用户数据创建</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, button {
+            padding: 8px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <h1>测试用户数据创建</h1>
+    
+    <div class="form-group">
+        <label for="token">GitHub Token:</label>
+        <input type="text" id="token" placeholder="输入GitHub API Token">
+    </div>
+    
+    <div class="form-group">
+        <label for="phone">手机号:</label>
+        <input type="text" id="phone" value="13800138000">
+    </div>
+    
+    <div class="form-group">
+        <label for="studentId">学号:</label>
+        <input type="text" id="studentId" value="20230001">
+    </div>
+    
+    <button onclick="testCreateUser()">测试创建用户</button>
+    
+    <div id="result"></div>
+    
+    <!-- 引入GitHub API -->
+    <script src="github-api.js"></script>
+    
+    <script>
+        function log(message) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML += '<p>' + new Date().toLocaleTimeString() + ': ' + message + '</p>';
+            resultDiv.scrollTop = resultDiv.scrollHeight;
+        }
+        
+        async function testCreateUser() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '';
+            
+            const token = document.getElementById('token').value;
+            const phone = document.getElementById('phone').value;
+            const studentId = document.getElementById('studentId').value;
+            
+            if (!token) {
+                log('请输入GitHub Token');
+                return;
+            }
+            
+            try {
+                log('开始测试用户数据创建...');
+                
+                // 初始化GitHub API
+                const githubAPI = new GitHubAPI();
+                githubAPI.setToken(token);
+                
+                log('GitHub API初始化成功');
+                log('Token设置成功');
+                
+                // 创建用户数据
+                const userData = {
+                    phone: phone,
+                    studentId: studentId,
+                    borrowStatus: '未借伞',
+                    currentUmbrella: null,
+                    borrowHistory: []
+                };
+                
+                log('准备创建用户数据...');
+                log('用户数据: ' + JSON.stringify(userData));
+                
+                const result = await githubAPI.saveUserData(phone, studentId, userData);
+                
+                log('✅ 创建用户数据成功！');
+                log('结果: ' + JSON.stringify(result));
+                
+            } catch (error) {
+                log('❌ 创建用户数据失败: ' + error.message);
+                log('错误详情: ' + error.stack);
+            }
+        }
+    </script>
+</body>
+</html>
