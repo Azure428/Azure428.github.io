@@ -3,12 +3,16 @@ class UmbrellaApp {
     constructor() {
         this.currentUser = null;
         this.umbrellaPoints = [];
-        this.init();
+        // 不要在构造函数中立即调用init，等待DOM加载完成
+        console.log('UmbrellaApp构造函数执行');
     }
 
     init() {
         // 绑定事件
         this.bindEvents();
+        console.log('UmbrellaApp初始化完成，开始检查githubAPI实例');
+        console.log('当前全局githubAPI:', window.githubAPI);
+        console.log('当前globalThis.githubAPI:', globalThis.githubAPI);
         // 初始化数据
         this.initData();
     }
@@ -40,7 +44,14 @@ class UmbrellaApp {
         // 初始化伞点数据（如果不存在）
         try {
             console.log('开始初始化数据...');
-            const points = await githubAPI.getUmbrellaPoints();
+            
+            // 确保githubAPI实例存在
+            if (!window.githubAPI) {
+                console.error('initData() - 未找到githubAPI实例！');
+                return;
+            }
+            
+            const points = await window.githubAPI.getUmbrellaPoints();
             console.log('获取伞点数据结果:', points);
             
             if (!points) {
@@ -53,15 +64,28 @@ class UmbrellaApp {
                     { id: 'point004', name: '宿舍区', location: '1号楼门口', count: 5 }
                 ];
                 
-                const saveResult = await githubAPI.saveUmbrellaPoints(initialPoints);
-                console.log('保存初始伞点数据结果:', saveResult);
-                this.umbrellaPoints = initialPoints;
+                try {
+                    const saveResult = await window.githubAPI.saveUmbrellaPoints(initialPoints);
+                    console.log('保存初始伞点数据结果:', saveResult);
+                    this.umbrellaPoints = initialPoints;
+                } catch (saveError) {
+                    console.error('保存初始伞点数据失败，将使用本地数据:', saveError);
+                    this.umbrellaPoints = initialPoints;
+                }
             } else {
                 this.umbrellaPoints = points;
             }
         } catch (error) {
             console.error('初始化数据失败:', error);
             console.error('错误详情:', error.stack);
+            // 使用本地默认数据
+            this.umbrellaPoints = [
+                { id: 'point001', name: '图书馆门口', location: '图书馆正门左侧', count: 10 },
+                { id: 'point002', name: '教学楼A座', location: '教学楼A座大厅', count: 8 },
+                { id: 'point003', name: '食堂门口', location: '第一食堂正门', count: 12 },
+                { id: 'point004', name: '宿舍区', location: '1号楼门口', count: 5 }
+            ];
+            console.log('使用本地默认伞点数据:', this.umbrellaPoints);
         }
     }
 
@@ -73,9 +97,24 @@ class UmbrellaApp {
             console.log('开始登录...');
             console.log('登录信息 - 手机号:', phone, '学号:', studentId);
             
+            // 确保githubAPI实例存在
+            if (!window.githubAPI) {
+                console.error('login() - 未找到githubAPI实例！');
+                // 尝试重新创建
+                window.githubAPI = new GitHubAPI();
+                console.log('login() - 已重新创建githubAPI实例:', window.githubAPI);
+            }
+            
             // 检查用户是否存在
-            let userData = await githubAPI.getUserData(phone, studentId);
-            console.log('获取用户数据结果:', userData);
+            let userData = null;
+            try {
+                userData = await window.githubAPI.getUserData(phone, studentId);
+                console.log('获取用户数据结果:', userData);
+            } catch (getError) {
+                console.warn('获取用户数据失败，可能是因为用户不存在:', getError.message);
+                // 如果获取失败（如404错误），视为用户不存在
+                userData = null;
+            }
 
             if (!userData) {
                 // 创建新用户
@@ -88,8 +127,14 @@ class UmbrellaApp {
                     borrowHistory: []
                 };
                 
-                const saveResult = await githubAPI.saveUserData(phone, studentId, userData);
-                console.log('保存新用户数据结果:', saveResult);
+                try {
+                    const saveResult = await window.githubAPI.saveUserData(phone, studentId, userData);
+                    console.log('保存新用户数据结果:', saveResult);
+                } catch (saveError) {
+                    console.error('保存新用户数据失败:', saveError);
+                    alert('创建用户失败: ' + saveError.message);
+                    return;
+                }
             }
 
             // 设置当前用户
@@ -102,10 +147,18 @@ class UmbrellaApp {
             this.updateUserInfo();
             
             console.log('登录成功，当前用户:', this.currentUser);
+            alert('登录成功！');
         } catch (error) {
-            alert('登录失败: ' + error.message);
             console.error('登录错误:', error);
             console.error('错误详情:', error.stack);
+            // 给出更详细的错误提示
+            if (error.message.includes('token')) {
+                alert('登录失败: GitHub API token错误或未提供，请检查URL中的token参数');
+            } else if (error.message.includes('404')) {
+                alert('登录失败: 未找到指定资源，请检查GitHub仓库设置');
+            } else {
+                alert('登录失败: ' + error.message);
+            }
         }
     }
 
@@ -152,7 +205,14 @@ class UmbrellaApp {
     async loadUmbrellaPoints() {
         try {
             console.log('开始加载伞点数据...');
-            const points = await githubAPI.getUmbrellaPoints();
+            
+            // 确保githubAPI实例存在
+            if (!window.githubAPI) {
+                console.error('loadUmbrellaPoints() - 未找到githubAPI实例！');
+                return;
+            }
+            
+            const points = await window.githubAPI.getUmbrellaPoints();
             console.log('加载伞点数据结果:', points);
             
             if (points) {
@@ -170,7 +230,7 @@ class UmbrellaApp {
                 this.renderUmbrellaPoints();
                 // 尝试保存到GitHub
                 try {
-                    const saveResult = await githubAPI.saveUmbrellaPoints(this.umbrellaPoints);
+                    const saveResult = await window.githubAPI.saveUmbrellaPoints(this.umbrellaPoints);
                     console.log('保存默认伞点数据到GitHub结果:', saveResult);
                 } catch (saveError) {
                     console.error('保存默认伞点数据到GitHub失败:', saveError);
@@ -179,6 +239,14 @@ class UmbrellaApp {
         } catch (error) {
             console.error('加载伞点数据失败:', error);
             console.error('错误详情:', error.stack);
+            // 使用本地默认数据
+            this.umbrellaPoints = [
+                { id: 'point001', name: '图书馆门口', location: '图书馆正门左侧', count: 10 },
+                { id: 'point002', name: '教学楼A座', location: '教学楼A座大厅', count: 8 },
+                { id: 'point003', name: '食堂门口', location: '第一食堂正门', count: 12 },
+                { id: 'point004', name: '宿舍区', location: '1号楼门口', count: 5 }
+            ];
+            this.renderUmbrellaPoints();
         }
     }
 
@@ -250,10 +318,22 @@ class UmbrellaApp {
             point.count -= 1;
 
             // 保存到GitHub
-            await Promise.all([
-                githubAPI.saveUserData(this.currentUser.phone, this.currentUser.studentId, this.currentUser),
-                githubAPI.saveUmbrellaPoints(this.umbrellaPoints)
-            ]);
+            if (!window.githubAPI) {
+                console.error('borrowUmbrella() - 未找到githubAPI实例！');
+                alert('保存数据失败：未找到API实例');
+                return;
+            }
+            
+            try {
+                await Promise.all([
+                    window.githubAPI.saveUserData(this.currentUser.phone, this.currentUser.studentId, this.currentUser),
+                    window.githubAPI.saveUmbrellaPoints(this.umbrellaPoints)
+                ]);
+            } catch (saveError) {
+                console.error('保存借伞数据失败:', saveError);
+                alert('保存借伞记录失败: ' + saveError.message);
+                return;
+            }
 
             // 更新界面
             this.updateUserInfo();
@@ -310,10 +390,22 @@ class UmbrellaApp {
             point.count += 1;
 
             // 保存到GitHub
-            await Promise.all([
-                githubAPI.saveUserData(this.currentUser.phone, this.currentUser.studentId, this.currentUser),
-                githubAPI.saveUmbrellaPoints(this.umbrellaPoints)
-            ]);
+            if (!window.githubAPI) {
+                console.error('returnUmbrella() - 未找到githubAPI实例！');
+                alert('保存数据失败：未找到API实例');
+                return;
+            }
+            
+            try {
+                await Promise.all([
+                    window.githubAPI.saveUserData(this.currentUser.phone, this.currentUser.studentId, this.currentUser),
+                    window.githubAPI.saveUmbrellaPoints(this.umbrellaPoints)
+                ]);
+            } catch (saveError) {
+                console.error('保存还伞数据失败:', saveError);
+                alert('保存还伞记录失败: ' + saveError.message);
+                return;
+            }
 
             // 更新界面
             this.updateUserInfo();
@@ -339,10 +431,20 @@ class UmbrellaApp {
 
 // 页面加载完成后初始化应用
 document.addEventListener('DOMContentLoaded', () => {
-    // githubAPI实例已在github-api.js中创建，这里直接使用
-    console.log('页面加载完成，使用已创建的githubAPI实例:', githubAPI);
+    console.log('DOM完全加载完成');
+    // 确保githubAPI实例存在
+    if (window.githubAPI) {
+        console.log('页面加载完成，使用已创建的githubAPI实例:', window.githubAPI);
+    } else {
+        console.error('页面加载完成，但未找到githubAPI实例！');
+        // 如果没有实例，尝试重新创建
+        window.githubAPI = new GitHubAPI();
+        console.log('已重新创建githubAPI实例:', window.githubAPI);
+    }
     // 初始化应用
     const app = new UmbrellaApp();
+    // 手动调用init，确保在DOM加载完成后执行
+    app.init();
     // 处理扫码参数
     app.handleScanParams();
 });
