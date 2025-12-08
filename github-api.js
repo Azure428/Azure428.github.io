@@ -21,19 +21,19 @@ class GitHubAPI {
     getTokenFromMultipleSources() {
         // 1. 从URL参数获取token（用于浏览器环境）
         const urlParams = new URLSearchParams(window.location.search);
-        const urlToken = urlParams.get('token');
-        if (urlToken) {
+        let token = urlParams.get('token');
+        if (token) {
             console.log('从URL参数获取到token');
             // 保存到localStorage以便后续使用
-            localStorage.setItem('github_token', urlToken);
-            return urlToken;
+            localStorage.setItem('github_token', token);
+            return token;
         }
         
         // 2. 从localStorage获取token
-        const localStorageToken = localStorage.getItem('github_token');
-        if (localStorageToken) {
+        token = localStorage.getItem('github_token');
+        if (token) {
             console.log('从localStorage获取到token');
-            return localStorageToken;
+            return token;
         }
         
         // 3. 从环境变量获取token（如果有配置）
@@ -66,9 +66,14 @@ class GitHubAPI {
                 throw new Error('GitHub API token不存在，请在URL中添加token参数，如：?token=your_github_token');
             }
             
-            const response = await fetch(`${this.baseUrl}/contents/${path}`, {
+            // 确保Authorization头只包含ISO-8859-1字符
+            const authHeader = 'token ' + this.token;
+            
+            // 对路径进行URL编码，确保只包含有效的ASCII字符
+            const encodedPath = encodeURIComponent(path);
+            const response = await fetch(`${this.baseUrl}/contents/${encodedPath}`, {
                 headers: {
-                    'Authorization': `token ${this.token}`,
+                    'Authorization': authHeader,
                     'Accept': 'application/vnd.github.v3+json'
                 }
             });
@@ -93,6 +98,11 @@ class GitHubAPI {
     // 创建或更新文件
     async createOrUpdateFile(path, content, message) {
         try {
+            // 检查token是否存在
+            if (!this.token) {
+                throw new Error('GitHub API token不存在，请在URL中添加token参数，如：?token=your_github_token');
+            }
+            
             // 检查文件是否存在
             const existingFile = await this.getFileContent(path);
             // 使用支持Unicode的Base64编码方法
@@ -107,10 +117,15 @@ class GitHubAPI {
 
             // 如果文件存在，需要提供sha
             if (existingFile) {
-                const response = await fetch(`${this.baseUrl}/contents/${path}`, {
+                // 确保Authorization头只包含ISO-8859-1字符
+                const authHeader = 'token ' + this.token;
+                
+                // 对路径进行URL编码，确保只包含有效的ASCII字符
+                const encodedPath = encodeURIComponent(path);
+                const response = await fetch(`${this.baseUrl}/contents/${encodedPath}`, {
                     method: 'GET',
                     headers: {
-                        'Authorization': `token ${this.token}`,
+                        'Authorization': authHeader,
                         'Accept': 'application/vnd.github.v3+json'
                     }
                 });
@@ -127,10 +142,15 @@ class GitHubAPI {
             console.log('使用的方法:', existingFile ? 'PUT' : 'POST');
             console.log('请求体:', JSON.stringify(payload, null, 2));
 
-            const response = await fetch(`${this.baseUrl}/contents/${path}`, {
+            // 确保Authorization头只包含ISO-8859-1字符
+            const authHeader = 'token ' + this.token;
+            
+            // 对路径进行URL编码，确保只包含有效的ASCII字符
+            const encodedPath = encodeURIComponent(path);
+            const response = await fetch(`${this.baseUrl}/contents/${encodedPath}`, {
                 method: existingFile ? 'PUT' : 'POST',
                 headers: {
-                    'Authorization': `token ${this.token}`,
+                    'Authorization': authHeader,
                     'Accept': 'application/vnd.github.v3+json',
                     'Content-Type': 'application/json'
                 },
