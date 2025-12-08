@@ -195,8 +195,12 @@ class GitHubAPI {
                 console.log('GitHub API响应状态:', response.status);
                 console.log('响应头:', JSON.stringify([...response.headers], null, 2));
                 
+                // 先获取原始响应文本，以便调试JSON解析问题
+                const responseText = await response.text();
+                console.log('原始响应文本:', responseText);
+                
                 try {
-                    const responseData = await response.json();
+                    const responseData = JSON.parse(responseText);
                     console.log('GitHub API响应内容:', JSON.stringify(responseData, null, 2));
                     
                     if (!response.ok) {
@@ -227,7 +231,7 @@ class GitHubAPI {
 
     // 获取用户数据
     async getUserData(phone, studentId) {
-        const path = `users/${phone}_${studentId}.json`;
+        const path = `test_user_${phone}_${studentId}.json`;
         return await this.getFileContent(path);
     }
 
@@ -238,30 +242,22 @@ class GitHubAPI {
         console.log('StudentId:', studentId);
         console.log('UserData:', JSON.stringify(userData, null, 2));
         
-        // 尝试先创建一个简单的目录占位文件，确保users目录存在
-        try {
-            console.log('尝试创建目录占位文件...');
-            await this.createOrUpdateFile('users/.gitkeep', '', 'Create users directory');
-            console.log('成功创建目录占位文件');
-        } catch (error) {
-            console.warn('创建目录占位文件失败:', error);
-            console.warn('失败详情:', error.stack);
-            // 继续执行，因为即使目录不存在，GitHub API也可能会自动创建
-        }
-        
-        const path = `users/${phone}_${studentId}.json`;
+        // 先尝试在根目录创建一个简单文件，验证基本功能
+        const simplePath = `test_user_${phone}_${studentId}.json`;
+        const content = JSON.stringify(userData, null, 2);
         const message = `Update user data for ${phone}_${studentId}`;
-        console.log('尝试保存用户数据到路径:', path);
+        
+        console.log('尝试保存用户数据到路径:', simplePath);
         console.log('提交信息:', message);
         
         try {
-            const result = await this.createOrUpdateFile(path, userData, message);
-            console.log('保存用户数据成功:', result);
-            return result;
+            await this.createOrUpdateFile(simplePath, content, message);
+            console.log('用户数据保存成功');
+            return true;
         } catch (error) {
             console.error('保存用户数据失败:', error);
             console.error('失败详情:', error.stack);
-            throw error;
+            return false;
         }
     }
 
