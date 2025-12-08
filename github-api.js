@@ -21,6 +21,11 @@ class GitHubAPI {
     // 获取文件内容
     async getFileContent(path) {
         try {
+            // 检查token是否存在
+            if (!this.token) {
+                throw new Error('GitHub API token不存在，请在URL中添加token参数，如：?token=your_github_token');
+            }
+            
             const response = await fetch(`${this.baseUrl}/contents/${path}`, {
                 headers: {
                     'Authorization': `token ${this.token}`,
