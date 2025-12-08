@@ -145,8 +145,8 @@ class GitHubAPI {
                 // 确保Authorization头只包含ISO-8859-1字符
                 const authHeader = 'token ' + this.token;
                 
-                // 对路径进行URL编码，确保只包含有效的ASCII字符
-                const encodedPath = encodeURIComponent(path);
+                // 只对路径中的特殊字符进行编码，保留斜杠
+                const encodedPath = path.split('/').map(encodeURIComponent).join('/');
                 const response = await fetch(`${this.baseUrl}/contents/${encodedPath}`, {
                     method: 'GET',
                     headers: {
@@ -171,8 +171,8 @@ class GitHubAPI {
             const authHeader = 'token ' + this.token;
             console.log('Authorization头:', authHeader.substring(0, 10) + '...'); // 只显示前10个字符，保护token
             
-            // 对路径进行URL编码，确保只包含有效的ASCII字符
-            const encodedPath = encodeURIComponent(path);
+            // 只对路径中的特殊字符进行编码，保留斜杠
+            const encodedPath = path.split('/').map(encodeURIComponent).join('/');
             console.log('原始路径:', path);
             console.log('编码后路径:', encodedPath);
             
