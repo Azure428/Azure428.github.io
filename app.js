@@ -92,10 +92,11 @@ class UmbrellaApp {
     async login() {
         const phone = document.getElementById('phone').value;
         const studentId = document.getElementById('studentId').value;
+        const token = document.getElementById('githubToken').value; // 获取token输入
 
         try {
             console.log('开始登录...');
-            console.log('登录信息 - 手机号:', phone, '学号:', studentId);
+            console.log('登录信息 - 手机号:', phone, '学号:', studentId, 'token是否提供:', !!token);
             
             // 确保githubAPI实例存在
             if (!window.githubAPI) {
@@ -103,6 +104,16 @@ class UmbrellaApp {
                 // 尝试重新创建
                 window.githubAPI = new GitHubAPI();
                 console.log('login() - 已重新创建githubAPI实例:', window.githubAPI);
+            }
+            
+            // 如果提供了token，设置到githubAPI实例中
+            if (token) {
+                window.githubAPI.setToken(token);
+                console.log('已设置新的GitHub token');
+            } else if (!window.githubAPI.token) {
+                // 如果没有token，提示用户输入
+                alert('GitHub API token不存在，请在登录时输入token，或在URL中添加?token=your_github_token');
+                return;
             }
             
             // 检查用户是否存在

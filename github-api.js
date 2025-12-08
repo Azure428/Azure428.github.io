@@ -4,9 +4,8 @@ class GitHubAPI {
         this.owner = 'Azure428'; // GitHub用户名
         this.repo = 'Azure428.github.io'; // 仓库名称
         
-        // 尝试从URL参数获取token（用于浏览器环境）
-        const urlParams = new URLSearchParams(window.location.search);
-        this.token = urlParams.get('token') || null;
+        // 尝试从多个来源获取token
+        this.token = this.getTokenFromMultipleSources();
         
         this.baseUrl = `https://api.github.com/repos/${this.owner}/${this.repo}`;
         
@@ -16,6 +15,47 @@ class GitHubAPI {
         console.log('Repo:', this.repo);
         console.log('Base URL:', this.baseUrl);
         console.log('Token存在:', !!this.token);
+    }
+    
+    // 从多个来源获取token
+    getTokenFromMultipleSources() {
+        // 1. 从URL参数获取token（用于浏览器环境）
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlToken = urlParams.get('token');
+        if (urlToken) {
+            console.log('从URL参数获取到token');
+            // 保存到localStorage以便后续使用
+            localStorage.setItem('github_token', urlToken);
+            return urlToken;
+        }
+        
+        // 2. 从localStorage获取token
+        const localStorageToken = localStorage.getItem('github_token');
+        if (localStorageToken) {
+            console.log('从localStorage获取到token');
+            return localStorageToken;
+        }
+        
+        // 3. 从环境变量获取token（如果有配置）
+        if (typeof process !== 'undefined' && process.env && process.env.GITHUB_TOKEN) {
+            console.log('从环境变量获取到token');
+            return process.env.GITHUB_TOKEN;
+        }
+        
+        // 4. 如果都没有，返回null
+        return null;
+    }
+    
+    // 设置token
+    setToken(token) {
+        this.token = token;
+        if (token) {
+            localStorage.setItem('github_token', token);
+            console.log('Token已设置并保存到localStorage');
+        } else {
+            localStorage.removeItem('github_token');
+            console.log('Token已清除');
+        }
     }
 
     // 获取文件内容
@@ -167,3 +207,6 @@ class GitHubAPI {
 
 // 初始化GitHub API实例并添加到全局作用域
 window.githubAPI = new GitHubAPI();
+console.log('GitHub API实例已创建并添加到全局作用域:', window.githubAPI);
+// 确保全局变量可用
+globalThis.githubAPI = window.githubAPI;
