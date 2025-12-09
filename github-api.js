@@ -3,7 +3,9 @@ class GitHubAPI {
     constructor() {
         this.owner = 'Azure428'; // GitHub用户名
         this.repo = 'Azure428.github.io'; // 仓库名称
-        this.token = 'YOUR_GITHUB_TOKEN'; // GitHub访问令牌，请勿直接在代码中存储敏感信息
+        // 这里应该由管理员配置实际的GitHub Token
+        // 注意：在生产环境中，不应该直接在代码中存储敏感信息
+        this.token = 'ghp_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'; // 示例Token格式，需要管理员替换为实际Token
         this.baseUrl = `https://api.github.com/repos/${this.owner}/${this.repo}`;
         
         // 验证配置信息
@@ -11,7 +13,7 @@ class GitHubAPI {
         console.log('Owner:', this.owner);
         console.log('Repo:', this.repo);
         console.log('Base URL:', this.baseUrl);
-        console.log('Token存在:', !!this.token);
+        console.log('Token已配置:', !!this.token && this.token !== 'ghp_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
     }
 
     // 设置GitHub访问令牌
