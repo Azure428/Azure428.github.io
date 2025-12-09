@@ -14,6 +14,12 @@ class GitHubAPI {
         console.log('Token存在:', !!this.token);
     }
 
+    // 设置GitHub访问令牌
+    setToken(token) {
+        this.token = token;
+        console.log('GitHub令牌已更新:', !!this.token);
+    }
+
     // 获取文件内容
     async getFileContent(path) {
         try {
