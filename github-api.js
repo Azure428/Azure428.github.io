@@ -14,6 +14,12 @@ class GitHubAPI {
         console.log('Repo:', this.repo);
         console.log('Base URL:', this.baseUrl);
         console.log('Token已配置:', !!this.token && this.token !== 'ghp_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
+        
+        // 如果使用的是示例Token，给出警告
+        if (this.token === 'ghp_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX') {
+            console.warn('警告: 正在使用示例GitHub Token，所有API请求都将失败！');
+            console.warn('请管理员在github-api.js文件中配置有效的GitHub Token。');
+        }
     }
 
     // 设置GitHub访问令牌
@@ -34,6 +40,13 @@ class GitHubAPI {
 
             if (response.status === 404) {
                 return null; // 文件不存在
+            }
+
+            if (response.status === 401) {
+                console.error('GitHub API认证失败！请检查Token是否有效。');
+                console.error('当前Token:', this.token);
+                console.error('请管理员在github-api.js文件中配置有效的GitHub Token。');
+                throw new Error(`GitHub API认证失败: ${response.statusText}`);
             }
 
             if (!response.ok) {
