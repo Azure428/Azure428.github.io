@@ -51,8 +51,8 @@ class GitHubAPI {
             const payload = {
                 message: message,
                 content: contentBase64,
-                branch: 'main'
-            };
+                branch: 'master'
+            }
 
             // 如果文件存在，需要提供sha
             if (existingFile) {
