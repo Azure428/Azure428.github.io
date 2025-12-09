@@ -67,7 +67,8 @@ class GitHubAPI {
         try {
             // 检查文件是否存在
             const existingFile = await this.getFileContent(path);
-            const contentBase64 = btoa(JSON.stringify(content, null, 2));
+            // 使用更可靠的Base64编码方法，支持Unicode字符
+            const contentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2))));
 
             const payload = {
                 message: message,
@@ -131,14 +132,8 @@ class GitHubAPI {
 
     // 创建或更新用户数据
     async saveUserData(phone, studentId, userData) {
-        // 尝试先创建一个简单的目录占位文件，确保users目录存在
-        try {
-            await this.createOrUpdateFile('users/.gitkeep', '', 'Create users directory');
-        } catch (error) {
-            console.warn('创建目录占位文件失败:', error);
-            // 继续执行，因为即使目录不存在，GitHub API也可能会自动创建
-        }
-        
+        // 直接创建用户文件，不创建目录占位文件
+        // GitHub API会自动创建必要的目录结构
         const path = `users/${phone}_${studentId}.json`;
         const message = `Update user data for ${phone}_${studentId}`;
         return await this.createOrUpdateFile(path, userData, message);
