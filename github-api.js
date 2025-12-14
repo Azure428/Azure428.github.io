@@ -46,7 +46,9 @@ class GitHubAPI {
                 console.error('GitHub API认证失败！请检查Token是否有效。');
                 console.error('当前Token:', this.token);
                 console.error('请管理员在github-api.js文件中配置有效的GitHub Token。');
-                throw new Error(`GitHub API认证失败: ${response.statusText}`);
+                // 对于认证失败，我们也返回null，让调用方可以继续执行
+                // 这样即使没有有效的Token，应用也能在本地模式下运行
+                return null;
             }
 
             if (!response.ok) {
@@ -58,7 +60,9 @@ class GitHubAPI {
             return JSON.parse(content);
         } catch (error) {
             console.error('获取文件内容错误:', error);
-            throw error;
+            // 对于其他错误，我们也返回null，而不是抛出错误
+            // 这样应用可以在本地模式下继续运行
+            return null;
         }
     }
 
@@ -113,6 +117,14 @@ class GitHubAPI {
             console.log('GitHub API响应内容:', JSON.stringify(responseData, null, 2));
 
             if (!response.ok) {
+                // 检查是否是认证失败
+                if (response.status === 401) {
+                    console.error('GitHub API认证失败！请检查Token是否有效。');
+                    console.error('当前Token:', this.token);
+                    console.error('请管理员在github-api.js文件中配置有效的GitHub Token。');
+                    // 返回错误信息而不是抛出错误，让调用方可以继续执行
+                    return { success: false, error: 'GitHub API认证失败', status: 401 };
+                }
                 throw new Error(`更新文件失败: ${response.statusText}`);
             }
 
@@ -120,7 +132,9 @@ class GitHubAPI {
         } catch (error) {
             console.error('创建或更新文件错误:', error);
             console.error('错误详情:', error.stack);
-            throw error;
+            // 对于其他错误，我们也返回错误信息而不是抛出错误
+            // 这样应用可以在本地模式下继续运行
+            return { success: false, error: error.message };
         }
     }
 
