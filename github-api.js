@@ -5,7 +5,7 @@ class GitHubAPI {
         this.repo = 'Azure428.github.io'; // 仓库名称
         // 这里应该由管理员配置实际的GitHub Token
         // 注意：在生产环境中，不应该直接在代码中存储敏感信息
-        this.token = 'ghp_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'; // 示例Token格式，需要管理员替换为实际Token
+        this.token = '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'; // 示例Token格式，需要管理员替换为实际Token
         this.baseUrl = `https://api.github.com/repos/${this.owner}/${this.repo}`;
         
         // 验证配置信息
@@ -13,10 +13,10 @@ class GitHubAPI {
         console.log('Owner:', this.owner);
         console.log('Repo:', this.repo);
         console.log('Base URL:', this.baseUrl);
-        console.log('Token已配置:', !!this.token && this.token !== 'ghp_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
+        console.log('Token已配置:', !!this.token && this.token !== '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');
         
         // 如果使用的是示例Token，给出警告
-        if (this.token === 'ghp_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX') {
+        if (this.token === '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') {
             console.warn('警告: 正在使用示例GitHub Token，所有API请求都将失败！');
             console.warn('请管理员在github-api.js文件中配置有效的GitHub Token。');
         }
