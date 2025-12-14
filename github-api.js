@@ -127,7 +127,16 @@ class GitHubAPI {
     // 获取用户数据
     async getUserData(phone, studentId) {
         const path = `users/${phone}_${studentId}.json`;
-        return await this.getFileContent(path);
+        try {
+            return await this.getFileContent(path);
+        } catch (error) {
+            // 如果是认证失败或文件不存在，返回null而不是抛出错误
+            if (error.message.includes('认证失败') || error.message.includes('404')) {
+                console.warn('用户数据获取失败:', error.message);
+                return null;
+            }
+            throw error;
+        }
     }
 
     // 创建或更新用户数据
@@ -136,12 +145,31 @@ class GitHubAPI {
         // GitHub API会自动创建必要的目录结构
         const path = `users/${phone}_${studentId}.json`;
         const message = `Update user data for ${phone}_${studentId}`;
-        return await this.createOrUpdateFile(path, userData, message);
+        try {
+            return await this.createOrUpdateFile(path, userData, message);
+        } catch (error) {
+            // 如果是认证失败，记录错误但不抛出，允许应用继续运行
+            if (error.message.includes('认证失败')) {
+                console.warn('用户数据保存失败(认证问题):', error.message);
+                console.warn('应用将在本地模式下运行，数据不会持久化到GitHub。');
+                return { success: false, error: 'GitHub API认证失败，数据未保存' };
+            }
+            throw error;
+        }
     }
 
     // 获取所有伞点数据
     async getUmbrellaPoints() {
-        return await this.getFileContent('umbrella_points.json');
+        try {
+            return await this.getFileContent('umbrella_points.json');
+        } catch (error) {
+            // 如果是认证失败或文件不存在，返回null而不是抛出错误
+            if (error.message.includes('认证失败') || error.message.includes('404')) {
+                console.warn('伞点数据获取失败:', error.message);
+                return null;
+            }
+            throw error;
+        }
     }
 
     // 更新伞点数据
